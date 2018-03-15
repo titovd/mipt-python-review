@@ -11,27 +11,25 @@ import sys
 
 r_alphabet = re.compile(u'[а-яА-Я]+')
 
-parser = argparse.ArgumentParser(description='Train')
+parser = argparse.ArgumentParser(description='Создание и сохранение модели')
 parser.add_argument('-in',
                     '--input-dir',
                     type=str,
                     metavar='',
                     nargs='?',
-                    help='The path to the directory with texts')
+                    help='Путь к директории с текстами(.txt)')
 parser.add_argument('-m',
                     '--model',
                     type=str,
                     metavar='',
                     required=True,
-                    help='The path to the model')
-parser.add_argument('-lowercase',
-                    '--lc',
-                    type=str,
-                    metavar='',
-                    nargs='?',
-                    default='Y',
-                    help='Allow the texts to lowercase(Y or N, default: Y)')
+                    help='Путь к файлу, в который сохраняется модель')
+parser.add_argument('--lc',
+                    action='store_true',
+                    help='Приводить ли тексты к lowercase')
 args = parser.parse_args()
+
+is_lowercase = args.lc
 
 
 # Генераторы для считывания данных
@@ -75,7 +73,7 @@ def generate_grams(tokens):
 
 
 def generate_model(corpus, my_model, lowercase):
-    if lowercase == 'Y':
+    if is_lowercase:
         lines = generate_lower_lines(corpus)
     else:
         lines = generate_lines(corpus)
@@ -94,7 +92,6 @@ def generate_model(corpus, my_model, lowercase):
 
 
 # Сохранение модели в указанную директорию
-# Имя модели "_model.json"
 
 
 def save_model(model, path):

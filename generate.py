@@ -60,32 +60,32 @@ def open_file(model):
     return data
 
 
-parser = argparse.ArgumentParser(description='Sentence generator')
+parser = argparse.ArgumentParser(description='Генератор предложений')
 parser.add_argument('-m',
                     '--model',
                     type=str,
                     metavar='',
                     required=True,
-                    help='The path to the model')
+                    help='Путь к сохраненной модели')
 parser.add_argument('-l',
                     '--length',
                     type=int,
                     metavar='',
                     required=True,
-                    help='The length of the sentence')
+                    help='Длина генерируемой последовательности')
 parser.add_argument('-o',
                     '--output',
                     type=str,
                     metavar='',
                     nargs='?',
-                    help='The path to the file with the result')
+                    help='Путь к файлу, в который будет записан результат')
 parser.add_argument('-s',
                     '--seed',
                     type=str,
                     metavar='',
                     nargs='?',
                     default='',
-                    help='The first word of your sentence')
+                    help='Начальное слово последовательности')
 args = parser.parse_args()
 
 
