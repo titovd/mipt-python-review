@@ -24,8 +24,8 @@ parser.add_argument('-m',
                     metavar='',
                     required=True,
                     help='The path to the model')
-parser.add_argument('-lc',
-                    '--lowercase',
+parser.add_argument('-lowercase',
+                    '--lc',
                     type=str,
                     metavar='',
                     nargs='?',
@@ -99,7 +99,7 @@ def generate_model(corpus, my_model, lowercase):
 
 def save_model(model, path):
     model_dir = path
-    my_file = open(model_dir + '/_model.json', mode='w')
+    my_file = open(model_dir, mode='w')
     json.dump(model, my_file, indent=2, ensure_ascii=False)
     my_file.close()
 
@@ -114,12 +114,12 @@ if __name__ == '__main__':
     if not args.input_dir:
         print("Enter your text here\n")
         data = generate_lines_stdin()
-        generate_model(data, model, args.lowercase)
+        generate_model(data, model, args.lc)
     else:
         for d, dirs, files in os.walk(args.input_dir):
             for file_data in files:
                 path = os.path.join(d, file_data)
                 file_data = open(path, mode='r', encoding='UTF-8')
-                generate_model(file_data, model, args.lowercase)
+                generate_model(file_data, model, args.lc)
                 file_data.close()
     save_model(model, args.model)

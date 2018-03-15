@@ -65,11 +65,13 @@ parser.add_argument('-m',
                     '--model',
                     type=str,
                     metavar='',
+                    required=True,
                     help='The path to the model')
 parser.add_argument('-l',
                     '--length',
                     type=int,
                     metavar='',
+                    required=True,
                     help='The length of the sentence')
 parser.add_argument('-o',
                     '--output',
