@@ -5,11 +5,58 @@ import json
 import os
 import sys
 
-# Рассматриваем только символы алфавита русского языка
-# Прописные и строчные буквы
+
+def generate_lines(data):
+    """Генератор для считывания данных"""
+    for line in data:
+        if args.lc:
+            yield line.lower()
+        else:
+            yield line
 
 
-r_alphabet = re.compile(u'[а-яА-Я]+')
+def generate_lines_stdin():
+    for line in sys.stdin:
+        yield line
+
+
+def generate_tokens(lines):
+    """Генератор для слов (только кириллица)"""
+    for line in lines:
+        for token in re.compile(u'[а-яА-Я]+').findall(line):
+            yield token
+
+
+def generate_grams(tokens):
+    """Генератор пар слов <слово1>-<слово2>"""
+    word_1 = ''
+    for word_2 in tokens:
+        yield word_1, word_2
+        word_1 = word_2
+
+
+def generate_model(corpus, model):
+    '''Создание модели'''
+    lines = generate_lines(corpus)
+    tokens = generate_tokens(lines)
+    grams = generate_grams(tokens)
+    for token_1, token_2 in grams:
+        if not token_1 or not token_2:
+            continue
+        if token_1 in model:
+            if token_2 in model[token_1]:
+                model[token_1][token_2] += 1
+            else:
+                model[token_1][token_2] = 1
+        else:
+            model[token_1] = {token_2: 1}
+
+
+def save_model(model, path):
+    """Сохранение модели в указанную директорию"""
+    with open(path, mode='w') as file:
+        json.dump(model, file, indent=2, ensure_ascii=False)
+
 
 parser = argparse.ArgumentParser(description='Создание и сохранение модели')
 parser.add_argument('-in',
@@ -29,94 +76,21 @@ parser.add_argument('--lc',
                     help='Приводить ли тексты к lowercase')
 args = parser.parse_args()
 
-is_lowercase = args.lc
-
-
-# Генераторы для считывания данных
-
-
-def generate_lines(data):
-    for line in data:
-        yield line
-
-
-def generate_lower_lines(data):
-    for line in data:
-        yield line.lower()
-
-
-def generate_lines_stdin():
-    for line in sys.stdin.readlines():
-        yield line
-
-
-# Генератор для слов (только кириллица)
-
-
-def generate_tokens(lines):
-    for line in lines:
-        for token in r_alphabet.findall(line):
-            yield token
-
-
-# Генератор пар слов <слово1>-<слово2>
-
-
-def generate_grams(tokens):
-    word_1, word_2 = '#', '#'
-    for word_2 in tokens:
-        yield word_1, word_2
-        word_1 = word_2
-
-
-# Создание модели
-
-
-def generate_model(corpus, my_model, lowercase):
-    if is_lowercase:
-        lines = generate_lower_lines(corpus)
-    else:
-        lines = generate_lines(corpus)
-    tokens = generate_tokens(lines)
-    grams = generate_grams(tokens)
-    for t1, t2 in grams:
-        if t1 == '#' or t2 == '#':
-            continue
-        if t1 in my_model:
-            if t2 in my_model[t1]:
-                my_model[t1][t2] += 1
-            else:
-                my_model[t1][t2] = 1
-        else:
-            my_model[t1] = {t2: 1}
-
-
-# Сохранение модели в указанную директорию
-
-
-def save_model(model, path):
-    model_dir = path
-    my_file = open(model_dir, mode='w')
-    json.dump(model, my_file, indent=2, ensure_ascii=False)
-    my_file.close()
-
-
-# Создание словаря, считывание данных
-# (из файла или же и стандартного потока ввода)
-# Обработка входных данных, создание и сохранение модели в указанную директорию
-
 
 if __name__ == '__main__':
+    """Создание словаря, считывание данных
+    (из файла или же со стандартного потока ввода)
+    Обработка входных данных,
+    создание и сохранение модели в указанную директорию"""
     model = dict()
     if not args.input_dir:
-        print("Enter your text here\n")
+        print("Введите свой текст здесь\n")
         data = generate_lines_stdin()
-        generate_model(data, model, args.lc)
+        generate_model(data, model)
     else:
         for d, dirs, files in os.walk(args.input_dir):
-            for file_data in files:
-                path = os.path.join(d, file_data)
-                file_data = open(path, mode='r', encoding='UTF-8')
-                generate_model(file_data, model, args.lc)
-                file_data.close()
+            for file_name in files:
+                path = os.path.join(d, file_name)
+                with open(path, mode='r', encoding='UTF-8') as file_data:
+                    generate_model(file_data, model)
     save_model(model, args.model)

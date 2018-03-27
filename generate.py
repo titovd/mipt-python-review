@@ -5,20 +5,17 @@ import json
 import os
 import sys
 
-# Случайный выбор начального слова или же в случае,
-# когда множество слов, следующих за <слово1>, пусто
-
 
 def generate_start(model):
+    """Случайный выбор начального слова или же в случае,
+    когда множество слов, следующих за <слово1>, пусто"""
     tmp_list = list(model.keys())
     return random.choice(tmp_list)
 
 
-# Генерация следующего за данным словом слова
-# Используется проедложенное кумулятивное распределение
-
-
 def generate_next_word(word_model):
+    """Генерация следующего за данным словом слова
+    Используется проедложенное кумулятивное распределение"""
     total = sum(word_model.values())
     random_int = random.randint(0, total - 1)
     index = 0
@@ -29,12 +26,10 @@ def generate_next_word(word_model):
             return list_of_keys[i]
 
 
-# Генерирование последовательности заданной длины
-# для заданного начального слова
-# В случае отсутствия заданного начального слова выбираем его случайно
-
-
 def generate_sentence(length, model, start):
+    """Генерирование последовательности заданной длины
+    для заданного начального слова
+    В случае отсутствия заданного начального слова выбираем его случайно"""
     if start:
         current_word = start
     else:
@@ -50,13 +45,10 @@ def generate_sentence(length, model, start):
     return sentence + '.'
 
 
-# Открытие модели
-
-
 def open_file(model):
-    my_file = open(model, mode='r')
-    data = json.load(my_file)
-    my_file.close()
+    """Открытие модели"""
+    with open(model, mode='r') as file:
+        data = json.load(file)
     return data
 
 
@@ -89,22 +81,18 @@ parser.add_argument('-s',
 args = parser.parse_args()
 
 
-# Открытие созданной модели и генирирование предложения
-
-
 if __name__ == '__main__':
+    """Открытие созданной модели и генирирование предложения"""
     data = open_file(args.model)
     if args.output:
-        my_file = open(args.output, mode='w', encoding='UTF-8')
-        if args.seed:
-            sentence = generate_sentence(args.length, data, args.seed) + '\n'
-            my_file.write(sentence)
-            my_file.close()
-        else:
-            start = generate_start(data)
-            sentence = generate_sentence(args.length, data, start) + '\n'
-            my_file.write(sentence)
-            my_file.close()
+        with open(args.output, mode='w', encoding='UTF-8') as file:
+            if args.seed:
+                sentence = generate_sentence(args.length, data, args.seed) + '\n'
+                file.write(sentence)
+            else:
+                start = generate_start(data)
+                sentence = generate_sentence(args.length, data, start) + '\n'
+                file.write(sentence)
     else:
         if args.seed:
             sentence = generate_sentence(args.length, data, args.seed) + '\n'
