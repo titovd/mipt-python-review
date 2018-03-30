@@ -36,7 +36,7 @@ def generate_grams(tokens):
 
 
 def generate_model(corpus, model, lowercase):
-    '''Создание модели'''
+    """Создание модели"""
     lines = generate_lines(corpus, lowercase)
     tokens = generate_tokens(lines)
     grams = generate_grams(tokens)

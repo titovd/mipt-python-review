@@ -13,7 +13,7 @@ def generate_next_word(word_model):
     random_int = random.randint(0, total - 1)
     index = 0
     list_of_keys = list(word_model.keys())
-    for i in range(0, len(word_model.keys())):
+    for i in range(len(word_model.keys())):
         index += word_model[list_of_keys[i]]
         if index >= random_int:
             return list_of_keys[i]
@@ -28,7 +28,7 @@ def generate_sentence(length, model, start):
     else:
         current_word = random.choice(list(model.keys()))
     sentence = str(current_word).capitalize()
-    for i in range(length):
+    for _ in range(length - 1):
         if not model.get(current_word):
             new_word = random.choice(list(model.keys()))
         else:
@@ -79,13 +79,8 @@ def main():
     data = load_model(args.model)
     if args.output:
         with open(args.output, mode='w', encoding='UTF-8') as file:
-            if args.seed:
-                sentence = generate_sentence(args.length, data, args.seed) + '\n'
-                file.write(sentence)
-            else:
-                start = generate_start(data)
-                sentence = generate_sentence(args.length, data, start) + '\n'
-                file.write(sentence)
+            sentence = generate_sentence(args.length, data, args.seed) + '\n'
+            file.write(sentence)
     else:
             sentence = generate_sentence(args.length, data, args.seed) + '\n'
             sys.stdout.write(sentence)
