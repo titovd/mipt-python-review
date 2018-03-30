@@ -6,10 +6,10 @@ import os
 import sys
 
 
-def generate_lines(data):
+def generate_lines(data, lowercase):
     """Генератор для считывания данных"""
     for line in data:
-        if args.lc:
+        if lowercase:
             yield line.lower()
         else:
             yield line
@@ -35,9 +35,9 @@ def generate_grams(tokens):
         word_1 = word_2
 
 
-def generate_model(corpus, model):
+def generate_model(corpus, model, lowercase):
     '''Создание модели'''
-    lines = generate_lines(corpus)
+    lines = generate_lines(corpus, lowercase)
     tokens = generate_tokens(lines)
     grams = generate_grams(tokens)
     for token_1, token_2 in grams:
@@ -77,20 +77,24 @@ parser.add_argument('--lc',
 args = parser.parse_args()
 
 
-if __name__ == '__main__':
+def main():
     """Создание словаря, считывание данных
-    (из файла или же со стандартного потока ввода)
-    Обработка входных данных,
-    создание и сохранение модели в указанную директорию"""
+        (из файла или же со стандартного потока ввода)
+        Обработка входных данных,
+        создание и сохранение модели в указанную директорию"""
     model = dict()
     if not args.input_dir:
         print("Введите свой текст здесь\n")
         data = generate_lines_stdin()
-        generate_model(data, model)
+        generate_model(data, model, args.lc)
     else:
         for d, dirs, files in os.walk(args.input_dir):
             for file_name in files:
                 path = os.path.join(d, file_name)
                 with open(path, mode='r', encoding='UTF-8') as file_data:
-                    generate_model(file_data, model)
+                    generate_model(file_data, model, args.lc)
     save_model(model, args.model)
+
+
+if __name__ == '__main__':
+    main()

@@ -45,9 +45,9 @@ def generate_sentence(length, model, start):
     return sentence + '.'
 
 
-def open_file(model):
+def load_model(model_path):
     """Открытие модели"""
-    with open(model, mode='r') as file:
+    with open(model_path, mode='r') as file:
         data = json.load(file)
     return data
 
@@ -81,9 +81,9 @@ parser.add_argument('-s',
 args = parser.parse_args()
 
 
-if __name__ == '__main__':
+def main():
     """Открытие созданной модели и генирирование предложения"""
-    data = open_file(args.model)
+    data = load_model(args.model)
     if args.output:
         with open(args.output, mode='w', encoding='UTF-8') as file:
             if args.seed:
@@ -94,10 +94,9 @@ if __name__ == '__main__':
                 sentence = generate_sentence(args.length, data, start) + '\n'
                 file.write(sentence)
     else:
-        if args.seed:
             sentence = generate_sentence(args.length, data, args.seed) + '\n'
             sys.stdout.write(sentence)
-        else:
-            start = generate_start(data)
-            sentence = generate_sentence(args.length, data, args.seed) + '\n'
-            sys.stdout.write(sentence)
+
+
+if __name__ == '__main__':
+    main()
