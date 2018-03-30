@@ -6,13 +6,6 @@ import os
 import sys
 
 
-def generate_start(model):
-    """Случайный выбор начального слова или же в случае,
-    когда множество слов, следующих за <слово1>, пусто"""
-    tmp_list = list(model.keys())
-    return random.choice(tmp_list)
-
-
 def generate_next_word(word_model):
     """Генерация следующего за данным словом слова
     Используется проедложенное кумулятивное распределение"""
@@ -33,11 +26,11 @@ def generate_sentence(length, model, start):
     if start:
         current_word = start
     else:
-        current_word = generate_start(model)
+        current_word = random.choice(list(model.keys()))
     sentence = str(current_word).capitalize()
     for i in range(0, length):
         if not model.get(current_word):
-            new_word = generate_start(model)
+            new_word = random.choice(list(model.keys()))
         else:
             new_word = generate_next_word(model[current_word])
         current_word = new_word
