@@ -28,7 +28,7 @@ def generate_sentence(length, model, start):
     else:
         current_word = random.choice(list(model.keys()))
     sentence = str(current_word).capitalize()
-    for i in range(0, length):
+    for i in range(length):
         if not model.get(current_word):
             new_word = random.choice(list(model.keys()))
         else:
