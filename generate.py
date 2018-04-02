@@ -45,37 +45,35 @@ def load_model(model_path):
     return data
 
 
-parser = argparse.ArgumentParser(description='Генератор предложений')
-parser.add_argument('-m',
-                    '--model',
-                    type=str,
-                    metavar='',
-                    required=True,
-                    help='Путь к сохраненной модели')
-parser.add_argument('-l',
-                    '--length',
-                    type=int,
-                    metavar='',
-                    required=True,
-                    help='Длина генерируемой последовательности')
-parser.add_argument('-o',
-                    '--output',
-                    type=str,
-                    metavar='',
-                    nargs='?',
-                    help='Путь к файлу, в который будет записан результат')
-parser.add_argument('-s',
-                    '--seed',
-                    type=str,
-                    metavar='',
-                    nargs='?',
-                    default='',
-                    help='Начальное слово последовательности')
-args = parser.parse_args()
-
-
 def main():
-    """Открытие созданной модели и генирирование предложения"""
+    """Парсер. Открытие созданной модели и генирирование предложения"""
+    parser = argparse.ArgumentParser(description='Генератор предложений')
+    parser.add_argument('-m',
+                        '--model',
+                        type=str,
+                        metavar='',
+                        required=True,
+                        help='Путь к сохраненной модели')
+    parser.add_argument('-l',
+                        '--length',
+                        type=int,
+                        metavar='',
+                        required=True,
+                        help='Длина генерируемой последовательности')
+    parser.add_argument('-o',
+                        '--output',
+                        type=str,
+                        metavar='',
+                        nargs='?',
+                        help='Путь к файлу, в который будет записан результат')
+    parser.add_argument('-s',
+                        '--seed',
+                        type=str,
+                        metavar='',
+                        nargs='?',
+                        default='',
+                        help='Начальное слово последовательности')
+    args = parser.parse_args()
     data = load_model(args.model)
     if args.output:
         with open(args.output, mode='w', encoding='UTF-8') as file:

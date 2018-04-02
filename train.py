@@ -4,6 +4,8 @@ import argparse
 import json
 import os
 import sys
+from collections import defaultdict
+from collections import Counter
 
 
 def generate_lines(data, lowercase):
@@ -43,13 +45,7 @@ def generate_model(corpus, model, lowercase):
     for token_1, token_2 in grams:
         if not token_1 or not token_2:
             continue
-        if token_1 in model:
-            if token_2 in model[token_1]:
-                model[token_1][token_2] += 1
-            else:
-                model[token_1][token_2] = 1
-        else:
-            model[token_1] = {token_2: 1}
+        model[token_1][token_2] += 1
 
 
 def save_model(model, path):
@@ -58,31 +54,28 @@ def save_model(model, path):
         json.dump(model, file, indent=2, ensure_ascii=False)
 
 
-parser = argparse.ArgumentParser(description='Создание и сохранение модели')
-parser.add_argument('-in',
-                    '--input-dir',
-                    type=str,
-                    metavar='',
-                    nargs='?',
-                    help='Путь к директории с текстами(.txt)')
-parser.add_argument('-m',
-                    '--model',
-                    type=str,
-                    metavar='',
-                    required=True,
-                    help='Путь к файлу, в который сохраняется модель')
-parser.add_argument('--lc',
-                    action='store_true',
-                    help='Приводить ли тексты к lowercase')
-args = parser.parse_args()
-
-
 def main():
-    """Создание словаря, считывание данных
-        (из файла или же со стандартного потока ввода)
-        Обработка входных данных,
-        создание и сохранение модели в указанную директорию"""
-    model = dict()
+    """Парсер. Создание словаря, считывание данных
+    (из файла или же стандартный поток ввода)
+    Обработка входных данных, создание, сохранение модели"""
+    parser = argparse.ArgumentParser(description='Создание, сохранение модели')
+    parser.add_argument('-in',
+                        '--input-dir',
+                        type=str,
+                        metavar='',
+                        nargs='?',
+                        help='Путь к директории с текстами(.txt)')
+    parser.add_argument('-m',
+                        '--model',
+                        type=str,
+                        metavar='',
+                        required=True,
+                        help='Путь к файлу, в который сохраняется модель')
+    parser.add_argument('--lc',
+                        action='store_true',
+                        help='Приводить ли тексты к lowercase')
+    args = parser.parse_args()
+    model = defaultdict(Counter)
     if not args.input_dir:
         print("Введите свой текст здесь\n")
         data = generate_lines_stdin()
